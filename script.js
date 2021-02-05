@@ -10,6 +10,7 @@ $("#searchButton").on("click", function(event){
     console.log(city)
     weatherSearch(city)
     forecastSearch(city)
+    // weatherUV(city)
 })
 
 //on click even to bring up locations. 
@@ -27,11 +28,14 @@ function weatherSearch(city) {
         $("#weather-view").text(JSON.stringify(response))
         var location = $("<p>").addClass("").text(response.name);
         var temperature = $("<h2>").text(response.main.temp)
+        var humidity = $("<p>").text(response.main.humidity)
+        var windSpeed = $("<p>").text(response.wind.speed)
+       
 
 
-
-
-
+        
+       $(".windSpeed").append(location, windSpeed)
+       $(".humidityp").append(location, humidity)
        $(".mainForecast").append(location, temperature)
 
     })
@@ -39,7 +43,7 @@ function weatherSearch(city) {
 }
 function forecastSearch(city) {
     var urlKey = "976ceebd985f546e6f616442814d3818";
-    var queryURL = "http://api.openweathermap.org/data/2.5/forecast?q="+ city + "&appid=" + urlKey;
+    var queryURL = "http://api.openweathermap.org/data/2.5/forecast?q="+ city + "&appid=" + urlKey +"&units=imperial";
     
     $.ajax({
         url: queryURL,
@@ -55,12 +59,9 @@ function forecastSearch(city) {
                 $(".fiveDayForecast").append(maxTemp)
 
 
+           
             }
-
         }
-
-
-
     })
 
 }
@@ -68,13 +69,16 @@ function forecastSearch(city) {
 
 // function weatherUV() {
 //     var urlKey = "976ceebd985f546e6f616442814d3818";
-//     var queryURL = "http://api.openweathermap.org/data/2.5/weather?q="+ city + "&appid=" + urlKey;
+//     var queryURL = "http://api.openweathermap.org/data/2.5/uvi?q="+ city + "&appid=" + urlKey;
     
 //     $.ajax({
 //         url: queryURL,
 //         method: "get"
 //     }).then(function(response) {
 //         $("#weather-view").text(JSON.stringify(response))
+//         // var uv = $("<h3>")
+//         console.log(response)
+
 //     })
 
 // }
