@@ -1,16 +1,17 @@
 //create the necessary variables 
 
-var WeatherExamples = []
+var weatherExamples = []
 
 //3 functions
 //general forecast search
 $("#searchButton").on("click", function(event){
  event.preventDefault()
     var city = $(".searchValue").val()
-    console.log(city)
+    weatherExamples.push(city)
     weatherSearch(city)
     forecastSearch(city)
-    // weatherUV(city)
+    console.log(weatherExamples)
+    render()
 })
 
 //on click even to bring up locations. 
@@ -25,17 +26,20 @@ function weatherSearch(city) {
         url: queryURL,
         method: "get"
     }).then(function(response) { console.log(response)
+        $('.windSpeed').empty();
+        $('.humidity').empty();
+        $('.mainForecast').empty();
         $("#weather-view").text(JSON.stringify(response))
-        var location = $("<p>").addClass("").text(response.name);
-        var temperature = $("<h2>").text(response.main.temp)
-        var humidity = $("<p>").text(response.main.humidity)
-        var windSpeed = $("<p>").text(response.wind.speed)
+        var location = $("<h2>").addClass("").text(response.name);
+        var temperature = $("<p>").text("Temperature: " + response.main.temp + "°")
+        var humidity = $("<p>").text("Humidity: " + response.main.humidity +"%")
+        var windSpeed = $("<p>").text(`Wind Speed: ${response.wind.speed} MPH`)
        
 
 
         
        $(".windSpeed").append(location, windSpeed)
-       $(".humidityp").append(location, humidity)
+       $(".humidity").append(location, humidity)
        $(".mainForecast").append(location, temperature)
 
     })
@@ -54,31 +58,35 @@ function forecastSearch(city) {
         for (var i = 0; i < response.list.length; i++ ) {
             if (response.list[i].dt_txt.indexOf("9:00:00")!== -1) {
                 
-                var maxTemp = $("<h2>").text("maxTemp: " + response.list[i].main.temp_max)
-
-                $(".fiveDayForecast").append(maxTemp)
-
-
-           
+                var column = $("<div>").addClass("col-md-2")
+                var card = $("<div>").addClass("card bg-primary text-white")
+                var body = $("<div>").addClass("card-body p-2")
+                var title = $("<h5>").addClass("card-title").text(new Date(response.list[i].dt_txt).toLocaleDateString())
+                var image = $("<img>").attr("src", "http://openweathermap.org/img/w/" + response.list[i].weather[0].icon + ".png")
+                var humidity = $("<p>").addClass("card-text").text("humidity: " + response.list[i].main.humidity)
+                var temperature = $("<p>").addClass("card-text").text("Temperature: " + response.list[i].main.temp_max)
+                column.empty()
+                column.append(card.append(body.append(title, image, temperature, humidity)))
+                $(".fiveDayForecast").append(column)
             }
         }
     })
 
 }
-// make a function that creates a row with the city name in it. So it appends a row each time dynamically. So that when you click search it'll create the row but will also put it into local storage and create a get local storage so that it persists through a refresh. 
+function previousSearches() {
+    var buttonVariable = this.textContent;
+    forecastSearch(buttonVariable);
+    weatherSearch(buttonVariable);
+};
+function render(){console.log(weatherExamples)
 
-// function weatherUV() {
-//     var urlKey = "976ceebd985f546e6f616442814d3818";
-//     var queryURL = "http://api.openweathermap.org/data/2.5/uvi?q="+ city + "&appid=" + urlKey;
+    // for each item in the searchHistory array
+    weatherExamples.forEach((weather)=>{
+        var newButton = $('<button>').text(weather).on("click", previousSearches);
+        $(".newUl").append(newButton);
+        // append the new button the ul 
+    })     
     
-//     $.ajax({
-//         url: queryURL,
-//         method: "get"
-//     }).then(function(response) {
-//         $("#weather-view").text(JSON.stringify(response))
-//         // var uv = $("<h3>")
-//         console.log(response)
+};
 
-//     })
 
-// }
